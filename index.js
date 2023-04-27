@@ -1,10 +1,13 @@
 import express from 'express';
-import jsonwebtoken from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import { registerValidation } from './validations/auth.js';
-import { validationResult } from 'express-validator';
+import { registerValidation, loginValidation } from './auth.js';
+import checkAuth from './utils/checkAuth.js';
 
-mongoose.connect('mongodb+srv://nurmuhammad1803:nurgamer1803@cluster0.lu7llic.mongodb.net/?retryWrites=true&w=majority').then(() => { console.log('DB ok') }).catch((err) => console.log('DB error: ', err))
+import * as UserController from './controllers/UserController.js';
+// import * as PostController from './controllers/PostController.js';
+
+mongoose.connect('mongodb+srv://nurmuhammad1803:nurgamer1803@cluster0.lu7llic.mongodb.net/blog?retryWrites=true&w=majority').then(() => { console.log('DB ok') }).catch((err) => console.log('DB error: ', err))
+
 
 const app = express()
 app.use(express.json())
@@ -12,22 +15,13 @@ app.use(express.json())
 app.get('/', (req, res) => {
     res.send("Hello world")
 })
+app.post('/auth/login', loginValidation, UserController.login)
+app.post('/auth/register', registerValidation, UserController.register)
+app.get('/auth/me', checkAuth, UserController.getMe)
 
-app.post('/auth/register', registerValidation, (req, res) => {
-    const errors = validationResult(req);
+// app.get('/posts', checkAuth, PostController.getAll)
 
-    if(!errors.isEmpty()) return res.status(400).send.json(errors.array())
-    
-    // {
-    //     "email": "shaxzodatest@gmail.com",
-    //     "fullName": "Shaxzoda",
-    //     "password": "234234234"
-    // }
 
-    res.json({
-        success: true,
-    })
-})
 
 // Listening port 4444
 app.listen(4444, (err) => {
