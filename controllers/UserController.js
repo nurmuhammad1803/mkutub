@@ -5,15 +5,6 @@ import { validationResult } from 'express-validator';
 
 export const register = async (req, res) => {
     try {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) return res.status(400).send.json('User not found')
-
-        // {
-        //     "email": "shaxzodatest@gmail.com",
-        //     "fullName": "Shaxzoda",
-        //     "password": "234234234"
-        // }
         const password = req.body.password;
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(password, salt);
